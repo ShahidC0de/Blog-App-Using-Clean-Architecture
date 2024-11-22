@@ -1,5 +1,6 @@
+import 'package:blog_app/core/common/app_user/cubit/app_user_cubit.dart';
 import 'package:blog_app/core/usecase/usecase.dart';
-import 'package:blog_app/features/auth/domain/entities/user.dart';
+import 'package:blog_app/core/common/entities/user.dart';
 import 'package:blog_app/features/auth/domain/usecase/current_user.dart';
 import 'package:blog_app/features/auth/domain/usecase/sign_up.dart';
 import 'package:blog_app/features/auth/domain/usecase/user_signup.dart';
@@ -13,14 +14,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final UserSignUp _userSignUp;
   final UserSignIn _userSignIn;
   final CurrentUser _currentUser;
+  final AppUserCubit _appUserCubit;
   AuthBloc({
     required UserSignUp usersignup,
     required UserSignIn userSignIn,
     required CurrentUser currentUser,
+    required AppUserCubit appUserCubit,
   })  : _userSignUp = usersignup,
         _userSignIn = userSignIn,
         _currentUser = currentUser,
+        _appUserCubit = appUserCubit,
         super(AuthInitial()) {
+    on<AuthEvent>((_, emit) => emit(
+        AuthLoading())); // on every AuthEvent the loading state is emitted, automatically...
+    // and its called refactoring.
     on<AuthSignupEvent>(_onAuthSignUp);
     on<AuthSignInEvent>(_onAuthSignIn);
     on<AuthIsUserLoggedIn>(_onCurrentUser);
@@ -30,7 +37,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignupEvent event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
     final res = await _userSignUp(
       UserSignUpParams(
         name: event.name,
@@ -38,25 +44,25 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         password: event.password,
       ),
     );
-    res.fold((l) {
-      print(l.message);
-      emit(AuthFailure(l.message));
-    }, (r) => emit(AuthSuccess(r)));
+    res.fold(
+      (l) {
+        debugPrint(l.message);
+        emit(AuthFailure(l.message));
+      },
+      (r) => onEmitAuthSuccess(r, emit),
+    );
   }
 
   void _onCurrentUser(
     AuthIsUserLoggedIn event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
     final res = await _currentUser(NoParams());
-    res.fold((failure) {
-      print(failure.message);
-      return AuthFailure(failure.message);
-    }, (r) {
+    res.fold((failure) => emit(AuthFailure(failure.message)), (r) {
+      debugPrint(r.email);
       debugPrint(r.name);
-      print(r.email);
-      return AuthSuccess(r);
+
+      return onEmitAuthSuccess(r, emit);
     });
   }
 
@@ -64,7 +70,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     AuthSignInEvent event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
     final res = await _userSignIn(
       UserSignInParams(
         email: event.email,
@@ -73,9 +78,12 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     res.fold(
       (failure) => emit(AuthFailure(failure.message)),
-      (user) => emit(
-        AuthSuccess(user),
-      ),
+      (user) => onEmitAuthSuccess(user, emit),
     );
+  }
+
+  void onEmitAuthSuccess(User user, Emitter<AuthState> emit) {
+    _appUserCubit.updateUser(user);
+    emit(AuthSuccess(user));
   }
 }
