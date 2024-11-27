@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget {
+  static route() => MaterialPageRoute(builder: (context) => const HomeScreen());
   const HomeScreen({super.key});
 
   @override

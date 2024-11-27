@@ -15,6 +15,12 @@ class BlogEditor extends StatelessWidget {
       ),
       maxLines:
           null, // to enable new lines in textformfield when the text exceds, the textformfield will expands....
+      validator: (value) {
+        if (value!.isEmpty) {
+          return '$hintText is missing';
+        }
+        return null;
+      },
     );
   }
 }

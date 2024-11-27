@@ -7,6 +7,11 @@ import 'package:blog_app/features/auth/domain/usecase/current_user.dart';
 import 'package:blog_app/features/auth/domain/usecase/sign_up.dart';
 import 'package:blog_app/features/auth/domain/usecase/user_signup.dart';
 import 'package:blog_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:blog_app/features/blog/data/models/blog_remote_datasource.dart';
+import 'package:blog_app/features/blog/data/repositories/blog_repository_impl.dart';
+import 'package:blog_app/features/blog/domain/repositories/blog_repository.dart';
+import 'package:blog_app/features/blog/domain/usecases/uploade_blog.dart';
+import 'package:blog_app/features/blog/presentation/bloc/blog_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -14,6 +19,7 @@ final serviceLocator = GetIt.instance;
 
 Future<void> initDependencies() async {
   _initAuth();
+  _initBlog();
   final supabase = await Supabase.initialize(
     anonKey: AppSecrets.annonKey,
     url: AppSecrets.url,
@@ -61,6 +67,18 @@ void _initAuth() {
     ),
   );
 }
+
 // note that the initDependencies function is called in main function so then it will run initAuth function,
 // now that all the dependencies are registered then in multiproviderbloc we should give the Authbloc dependency,
 // and then it will go from last step to first step....
+void _initBlog() {
+  serviceLocator
+    ..registerFactory<BlogRemoteDatasource>(
+        () => BlogRemoteDatasourceImpl(supabaseClient: serviceLocator()))
+    ..registerFactory<BlogRepository>(
+        () => BlogRepositoryImpl(serviceLocator()))
+    ..registerFactory<UploadBlog>(
+        () => UploadBlog(blogRepository: serviceLocator()))
+    ..registerLazySingleton(() => BlogBloc(serviceLocator()));
+  ;
+}
