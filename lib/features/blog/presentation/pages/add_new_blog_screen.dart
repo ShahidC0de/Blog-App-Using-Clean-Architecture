@@ -45,11 +45,12 @@ class _AddNewBlogScreenState extends State<AddNewBlogScreen> {
           .user
           .id; // so this allows us to retrieve the current user id
       context.read<BlogBloc>().add(UploadUserBlog(
-          posterId: posterId,
-          title: titleController.text.trim(),
-          content: blogController.text.trim(),
-          image: image!,
-          topics: selectedTopics));
+            posterId: posterId,
+            title: titleController.text.trim(),
+            content: blogController.text.trim(),
+            image: image!,
+            topics: selectedTopics,
+          ));
     }
   }
 
