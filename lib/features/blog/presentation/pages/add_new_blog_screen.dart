@@ -78,7 +78,7 @@ class _AddNewBlogScreenState extends State<AddNewBlogScreen> {
         listener: (context, state) {
           if (state is BlogFailure) {
             showSnackBar(context, state.message);
-          } else if (state is BlogSuccess) {
+          } else if (state is BlogUploadSuccess) {
             Navigator.of(context)
                 .pushAndRemoveUntil(HomeScreen.route(), (route) => false);
           }

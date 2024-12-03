@@ -12,4 +12,9 @@ final class BlogFailure extends BlogState {
   BlogFailure(this.message);
 }
 
-final class BlogSuccess extends BlogState {}
+final class BlogUploadSuccess extends BlogState {}
+
+final class BlogsReceivedSuccess extends BlogState {
+  final List<Blog> blogs;
+  BlogsReceivedSuccess(this.blogs);
+}

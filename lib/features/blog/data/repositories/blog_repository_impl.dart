@@ -4,6 +4,7 @@ import 'package:blog_app/core/error/exceptions.dart';
 import 'package:blog_app/core/error/failure.dart';
 import 'package:blog_app/features/blog/data/models/blog_model.dart';
 import 'package:blog_app/features/blog/data/models/blog_remote_datasource.dart';
+import 'package:blog_app/features/blog/domain/entities/blog.dart';
 import 'package:blog_app/features/blog/domain/repositories/blog_repository.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:uuid/uuid.dart';
@@ -37,6 +38,16 @@ class BlogRepositoryImpl implements BlogRepository {
       return right(uploadedBlog);
     } on ServerException catch (e) {
       return left(Failure(e.message));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Blog>>> getAllBlogs() async {
+    try {
+      final blogs = await blogRemoteDatasource.getAllUserBlogs();
+      return right(blogs);
+    } on ServerException catch (e) {
+      return left(Failure(e.toString()));
     }
   }
 }

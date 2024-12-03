@@ -17,3 +17,5 @@ final class UploadUserBlog extends BlogEvent {
     required this.topics,
   });
 }
+
+final class BlogFetchAllBlogs extends BlogEvent {}
