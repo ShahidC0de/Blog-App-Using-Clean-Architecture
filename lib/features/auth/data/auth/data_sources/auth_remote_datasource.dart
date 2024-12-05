@@ -43,6 +43,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
       ).copyWith(
         email: userSession!.user.email,
       );
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -59,6 +61,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
       return UserModel.fromJson(response.user!.toJson()).copyWith(
         email: userSession!.user.email,
       );
+    } on AuthException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }

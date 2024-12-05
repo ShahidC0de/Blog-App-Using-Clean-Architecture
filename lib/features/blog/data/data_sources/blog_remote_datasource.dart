@@ -29,6 +29,8 @@ class BlogRemoteDatasourceImpl implements BlogRemoteDatasource {
       debugPrint(decodedData.toString());
 
       return BlogModel.fromJson(blogData.first);
+    } on StorageException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -45,6 +47,8 @@ class BlogRemoteDatasourceImpl implements BlogRemoteDatasource {
       return supabaseClient.storage
           .from('blog_images')
           .getPublicUrl(blog.id); // getting the blog image url,
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }
@@ -64,6 +68,8 @@ class BlogRemoteDatasourceImpl implements BlogRemoteDatasource {
                 // added posterName in copywith function, so it is the way to fetch the name,
               ))
           .toList();
+    } on PostgrestException catch (e) {
+      throw ServerException(e.message);
     } catch (e) {
       throw ServerException(e.toString());
     }

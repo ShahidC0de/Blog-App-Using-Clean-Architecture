@@ -52,7 +52,7 @@ class BlogModel extends Blog {
         title: json['title'] as String,
         content: json['content'] as String,
         imageUrl: json['image_url'] as String,
-        topics: List<String>.from(json['topics'] ?? null),
+        topics: List<String>.from(json['topics']),
         //json['topics'] as List<String>,
         // List<String>.from(map['topics'] as List<String>)
         updatedAt: json['updated_at'] == null
